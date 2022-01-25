@@ -1,6 +1,7 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     mode: 'development',
@@ -9,10 +10,32 @@ module.exports = {
         path: path.resolve(__dirname, 'build'),
         filename: '[name].[hash].js',
     },
+    resolve: {
+        extensions: ['.js', '.jsx'],
+        alias: {
+            '@public': path.resolve(__dirname, 'public'),
+        },
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+        },
+    },
     devServer: {
         port: 3000,
     },
-    plugins: [new HTMLWebpackPlugin({ template: './public/index.html' }), new CleanWebpackPlugin()],
+    plugins: [
+        new HTMLWebpackPlugin({ template: './public/index.html' }),
+        new CleanWebpackPlugin(),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'public/assets/some.txt'),
+                    to: path.resolve(__dirname, 'build'),
+                },
+            ],
+        }),
+    ],
     module: {
         rules: [
             {
